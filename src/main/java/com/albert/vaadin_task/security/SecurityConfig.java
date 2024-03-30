@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 
 @EnableWebSecurity
@@ -24,6 +25,8 @@ public class SecurityConfig extends VaadinWebSecurity {
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
         setLoginView(http, LoginView.class);
+        http.formLogin(customize -> customize
+                        .successHandler(authenticationSuccessHandler()));
     }
 
     @Bean
@@ -43,4 +46,10 @@ public class SecurityConfig extends VaadinWebSecurity {
             throw new UsernameNotFoundException("User '" + username + "' not found");
         };
     }
+
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new AdminOrUserAuthenticationSuccessHandler();
+    }
+
 }
